@@ -70,6 +70,7 @@ public class TrelloAPI
         post.AddField("desc", card.desc);
         post.AddField("due", card.due);
         post.AddField("idList", card.idList);
+        //post.AddField("idLabels", String.Join(",",card.labelIDList));
         
         UnityWebRequest uwr = HandleRequest
         (

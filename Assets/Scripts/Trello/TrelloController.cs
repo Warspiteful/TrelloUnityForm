@@ -19,6 +19,9 @@ public class TrelloController : MonoBehaviour
     private StringVariable idList;
     [SerializeField]
     private StringVariable dueTime;
+    [SerializeField]
+    private StringVariable labelID;
+
     
     [Header("Trello Settings")]
     [SerializeField]
@@ -68,6 +71,7 @@ public class TrelloController : MonoBehaviour
         card.name = title.Value;
         card.desc = desc.Value;
         card.due = dueTime.Value;
+        card.labelIDList.Add(labelID.Value);
         
         TrelloAPI api = new TrelloAPI(authorization.key, authorization.token);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FormController : MonoBehaviour
 {
@@ -12,13 +13,18 @@ public class FormController : MonoBehaviour
     [SerializeField] private TMP_InputField TitleInput;
     [SerializeField] private TMP_InputField DescInput;
     
+    [SerializeField] private TMP_InputField FirstNameInput;
+
+    [SerializeField] private TMP_InputField LastNameInput;
+
+    [SerializeField] private TMP_InputField EmailInput;
+
     [Header("Data Inputs")]
     [SerializeField] private StringListVariable boards;
     [SerializeField] private StringListVariable boardIds;
     [SerializeField] private StringListVariable lists;
     [SerializeField] private StringListVariable listIds;
-    
-    
+
     [Header("Data Outputs")]
     [SerializeField] private StringVariable selectedBoard;
     [SerializeField] private StringVariable selectedBoardId;
@@ -27,6 +33,7 @@ public class FormController : MonoBehaviour
     [SerializeField] private StringVariable desc;
     [SerializeField] private StringVariable title;
     [SerializeField] private StringVariable dueTime;
+    [SerializeField] private SeverityEnumVariable severity;
     
     [Header("Input Event Signal")] 
     [SerializeField]
@@ -40,6 +47,8 @@ public class FormController : MonoBehaviour
 
     [SerializeField]
     private EventSignal resetSignal;
+    
+    
     
     private void OnEnable()
     {
@@ -86,6 +95,7 @@ public class FormController : MonoBehaviour
     {
         desc.Value = "#" + "Demo " + Application.version + "\n" +
                      "___\n" +
+
                      "###System Information\n" +
                      "- " + SystemInfo.operatingSystem + "\n" +
                      "- " + SystemInfo.processorType + "\n" +
@@ -102,7 +112,11 @@ public class FormController : MonoBehaviour
                      "###Other Information\n" +
                      "Playtime: " +
                      String.Format("{0:0}:{1:00}", Mathf.Floor(Time.time / 60), Time.time % 60) +
-                     "h" + "\n";
+                     "h\n" + 
+                     "___\n" +
+                     "###User Contact\n" +
+                     "- Name: " + FirstNameInput.text + " " + LastNameInput.text + "\n" +
+                     "- Email: " + EmailInput.text + "\n";
     }
 
     public void SetActiveBoard(Int32 selectedDropdown)
@@ -156,7 +170,10 @@ public class FormController : MonoBehaviour
 
         TitleInput.text = "";
         DescInput.text = "";
+    }
 
-
+    public void SetSeverity(SeverityValue severityVal)
+    {
+        severity.Value = severityVal.severity;
     }
 }
