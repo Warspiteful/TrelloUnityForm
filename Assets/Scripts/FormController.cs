@@ -1,20 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class FormController : MonoBehaviour
 {
-
-    [Header("Card")]
-    [SerializeField] private TrelloCard card;
-    
     [Header("UI Elements")]
     [SerializeField] private TMP_Dropdown BoardDropdown;
     [SerializeField] private TMP_Dropdown ListDropdown;
+    [SerializeField] private TMP_InputField TitleInput;
+    [SerializeField] private TMP_InputField DescInput;
     
     [Header("Data Inputs")]
     [SerializeField] private StringListVariable boards;
@@ -22,13 +18,16 @@ public class FormController : MonoBehaviour
     [SerializeField] private StringListVariable lists;
     [SerializeField] private StringListVariable listIds;
     
+    
     [Header("Data Outputs")]
     [SerializeField] private StringVariable selectedBoard;
     [SerializeField] private StringVariable selectedBoardId;
     [SerializeField] private StringVariable selectedList;
     [SerializeField] private StringVariable selectedListId;
     [SerializeField] private StringVariable desc;
-
+    [SerializeField] private StringVariable title;
+    [SerializeField] private StringVariable dueTime;
+    
     [Header("Input Event Signal")] 
     [SerializeField]
     private EventSignal onBoardLoad;
@@ -39,16 +38,22 @@ public class FormController : MonoBehaviour
     [SerializeField]
     private EventSignal sendSignal;
 
+    [SerializeField]
+    private EventSignal resetSignal;
     
     private void OnEnable()
     {
+  
         onBoardLoad.onCall += AddBoardDropdownOptions;
         onListLoad.onCall += AddListDropdownOptions;
+        resetSignal.onCall += ResetFields;
     }
 
     private void OnDisable()
     {
         onBoardLoad.onCall -= AddBoardDropdownOptions;
+        onListLoad.onCall -= AddListDropdownOptions;
+        resetSignal.onCall -= ResetFields;
     }
 
     private void AddBoardDropdownOptions() {
@@ -61,6 +66,7 @@ public class FormController : MonoBehaviour
         List<string> options = boards.Value.Prepend(" ").ToList();
         BoardDropdown.ClearOptions();
         BoardDropdown.AddOptions(options);
+        SetActiveBoard(0);
     }
 
     private void AddListDropdownOptions()
@@ -68,12 +74,9 @@ public class FormController : MonoBehaviour
         ToggleListDropdown(true);
         ListDropdown.ClearOptions();
         ListDropdown.AddOptions(lists.Value);
-        selectedList.Value = "";
-        selectedListId.Value = "";
+        SetActiveList(0);
     }
     
-    
-
     private void ToggleListDropdown(bool isRevealed)
     {
         ListDropdown.gameObject.SetActive(isRevealed);
@@ -112,7 +115,11 @@ public class FormController : MonoBehaviour
         selectedBoard.Value = boards.Value[selectedDropdown - 1];
         selectedBoardId.Value = boardIds.Value[selectedDropdown - 1];
     }
-    
+
+    public void SetTitle(string title)
+    {
+        this.title.Value = DateTime.Today + " - " + title;
+    }
     
     public void SetActiveList(Int32 selectedDropdown)
     {
@@ -122,6 +129,34 @@ public class FormController : MonoBehaviour
 
     public void SendSignal()
     {
+        if (string.IsNullOrEmpty(selectedListId.Value))
+        {
+            Debug.Log("Must select Valid List ID");
+        }
+
+        if (string.IsNullOrEmpty(desc.Value))
+        {
+            Debug.Log("Must Add Description");
+        }
+
+        if (string.IsNullOrEmpty(title.Value))
+        {
+            Debug.Log("Must place title");
+        }
+        
+        dueTime.Value = DateTime.Today.ToString();
+        
         sendSignal.onCall?.Invoke();
+    }
+
+    private void ResetFields()
+    {
+        SetActiveBoard(0);
+        BoardDropdown.value = 0;
+
+        TitleInput.text = "";
+        DescInput.text = "";
+
+
     }
 }

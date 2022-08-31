@@ -17,6 +17,8 @@ public class TrelloController : MonoBehaviour
     private StringVariable desc;
     [SerializeField] 
     private StringVariable idList;
+    [SerializeField]
+    private StringVariable dueTime;
     
     [Header("Trello Settings")]
     [SerializeField]
@@ -27,6 +29,10 @@ public class TrelloController : MonoBehaviour
     [Header("Input Signals")]
     [SerializeField]
     private EventSignal sendSignal;
+    
+    [Header("Ouput Signals")]
+    [SerializeField]
+    private EventSignal resetSignal;
 
     private void OnEnable()
     {
@@ -47,8 +53,6 @@ public class TrelloController : MonoBehaviour
     public void SendNewCard() {
         StartCoroutine(AsyncSend());
     }
-    
-
 
     IEnumerator AsyncSend()
     {
@@ -63,11 +67,12 @@ public class TrelloController : MonoBehaviour
         }
         card.name = title.Value;
         card.desc = desc.Value;
-        card.due = DateTime.Today.ToString();
+        card.due = dueTime.Value;
         
         TrelloAPI api = new TrelloAPI(authorization.key, authorization.token);
 
         yield return api.UploadCard(card);
-
+        
+        resetSignal.onCall?.Invoke();
     }
 }

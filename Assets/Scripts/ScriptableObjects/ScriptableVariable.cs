@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class ScriptableVariable<T> : ScriptableObject
 {
-    [SerializeField] private T value;
+    [SerializeField] protected T value;
 
     public VariableUpdated ValueUpdated;
     public T Value

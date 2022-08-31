@@ -264,9 +264,9 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11400000, guid: b00299bd1c2d853488e85223da78ee6d, type: 2}
-        m_TargetAssemblyTypeName: ScriptableVariable`1[[System.String, mscorlib
-        m_MethodName: set_Value
+      - m_Target: {fileID: 699290048}
+        m_TargetAssemblyTypeName: FormController, Assembly-CSharp
+        m_MethodName: SetTitle
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1847,6 +1847,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BoardDropdown: {fileID: 1258991815}
   ListDropdown: {fileID: 1094440251}
+  TitleInput: {fileID: 77020387}
+  DescInput: {fileID: 205948263}
   boards: {fileID: 11400000, guid: 87139abd68034a340801ae64fecf8731, type: 2}
   boardIds: {fileID: 11400000, guid: e44f2b83331551d4fbc84f64498abe6b, type: 2}
   lists: {fileID: 11400000, guid: af073c6305d12b94a8417a9a907607a0, type: 2}
@@ -1856,9 +1858,12 @@ MonoBehaviour:
   selectedList: {fileID: 11400000, guid: 66b4b53d0e03ced4fb6b032f032179f2, type: 2}
   selectedListId: {fileID: 11400000, guid: 0a2158d6f4e18fb41a8d954b90da14bb, type: 2}
   desc: {fileID: 11400000, guid: e35cd79be7275a14d9a1a7251e33bf00, type: 2}
+  title: {fileID: 11400000, guid: b00299bd1c2d853488e85223da78ee6d, type: 2}
+  dueTime: {fileID: 11400000, guid: da6636b5f81883742b7a4e5fe7eb75ec, type: 2}
   onBoardLoad: {fileID: 11400000, guid: 5309cd1d9a9ca494b9c6fbff7568ee70, type: 2}
   onListLoad: {fileID: 11400000, guid: 42c8a0efc21b11a43ae57c3b63f15069, type: 2}
   sendSignal: {fileID: 11400000, guid: e3e95c01ab57f4c4f934c77d1ee1aefb, type: 2}
+  resetSignal: {fileID: 11400000, guid: 19c3c7d15b6346a4ba7e0c5b09e66c2f, type: 2}
 --- !u!1 &793196333
 GameObject:
   m_ObjectHideFlags: 0
@@ -2104,9 +2109,11 @@ MonoBehaviour:
   title: {fileID: 11400000, guid: b00299bd1c2d853488e85223da78ee6d, type: 2}
   desc: {fileID: 11400000, guid: e35cd79be7275a14d9a1a7251e33bf00, type: 2}
   idList: {fileID: 11400000, guid: 0a2158d6f4e18fb41a8d954b90da14bb, type: 2}
+  dueTime: {fileID: 11400000, guid: da6636b5f81883742b7a4e5fe7eb75ec, type: 2}
   _defaultBoard: 
   _defaultList: 
   sendSignal: {fileID: 11400000, guid: e3e95c01ab57f4c4f934c77d1ee1aefb, type: 2}
+  resetSignal: {fileID: 11400000, guid: 19c3c7d15b6346a4ba7e0c5b09e66c2f, type: 2}
 --- !u!4 &836932722
 Transform:
   m_ObjectHideFlags: 0
@@ -3248,6 +3255,59 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!1 &1275091470
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1275091472}
+  - component: {fileID: 1275091471}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1275091471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275091470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa4c578ec932054fb29b2daf89ccd55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reset: {fileID: 11400000, guid: 19c3c7d15b6346a4ba7e0c5b09e66c2f, type: 2}
+  vars:
+  - {fileID: 11400000, guid: 6e3f7a70526d63b4f8ac25944900ac49, type: 2}
+  - {fileID: 11400000, guid: 0a362c1e08a30a9489e9d9f39e9b8934, type: 2}
+  - {fileID: 11400000, guid: 66b4b53d0e03ced4fb6b032f032179f2, type: 2}
+  - {fileID: 11400000, guid: 0a2158d6f4e18fb41a8d954b90da14bb, type: 2}
+  - {fileID: 11400000, guid: e35cd79be7275a14d9a1a7251e33bf00, type: 2}
+  - {fileID: 11400000, guid: da6636b5f81883742b7a4e5fe7eb75ec, type: 2}
+  - {fileID: 11400000, guid: b00299bd1c2d853488e85223da78ee6d, type: 2}
+--- !u!4 &1275091472
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275091470}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 461.65024, y: 275.29657, z: 3.850106}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1314151484
 GameObject:
   m_ObjectHideFlags: 0
