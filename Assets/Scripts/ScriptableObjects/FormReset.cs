@@ -28,7 +28,7 @@ public class FormReset : MonoBehaviour
   {
     foreach (StringVariable stringVar in vars)
     {
-      stringVar.Reset();
+      stringVar.ResetVal();
     }
   }
 }

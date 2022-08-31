@@ -5,7 +5,7 @@ using UnityEngine;
     fileName = "NewStringVariable")]
 public class StringVariable : ScriptableVariable<string>
 {
-    public void Reset()
+    public override void ResetVal()
     {
         value = "";
     }

@@ -6,4 +6,8 @@ using UnityEngine;
     fileName = "NewStringListVariable")]
 public class StringListVariable : ScriptableVariable<List<string>>
 {
+    public override void ResetVal()
+    {
+        
+    }
 }

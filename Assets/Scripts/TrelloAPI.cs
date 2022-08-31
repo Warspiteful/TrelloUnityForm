@@ -47,7 +47,7 @@ public class TrelloAPI
             );
         
         var dict = Json.Deserialize(uwr.downloadHandler.text) as Dictionary<string,object>;
-      
+        uwr.Dispose();
         return (List<object>) dict["boards"];
     }
 
@@ -58,9 +58,9 @@ public class TrelloAPI
             UnityWebRequest.Get(
             $"{BoardBaseUrl}/{id}/lists?key={_key}&token={_token}&boards=all")
         );
-        
-        return Json.Deserialize(uwr.downloadHandler.text) as List<object>;
-
+        List<object> listData = Json.Deserialize(uwr.downloadHandler.text) as List<object>;
+        uwr.Dispose();
+        return listData;
     }
     
     public TrelloCard UploadCard(TrelloCard card)
@@ -76,7 +76,7 @@ public class TrelloAPI
             UnityWebRequest.Post($"{CardBaseUrl}?key={_key}&token={_token}", post)
         );
         
-        Debug.Log($"Trello card sent!\nResponse {uwr.responseCode}");
+        uwr.Dispose();
         return card;
     }
     

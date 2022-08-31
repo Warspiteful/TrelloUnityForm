@@ -6,6 +6,8 @@ public abstract class ScriptableVariable<T> : ScriptableObject
 {
     [SerializeField] protected T value;
 
+    public abstract void ResetVal();
+
     public VariableUpdated ValueUpdated;
     public T Value
     {
