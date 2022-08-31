@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class TrelloAuth : ScriptableObject
+public class EventSignal : ScriptableObject
 {
-    public string token;
-    public string key;
+    public VariableUpdated onCall;
 }

@@ -6,61 +6,68 @@ using UnityEngine;
 
 public class TrelloController : MonoBehaviour
 {
-    [Header("Trello Auth")] 
-    [SerializeField] private string _key;
-    [SerializeField] private string _token;
+    [Header("Authorization")]
+    [SerializeField]
+    private TrelloAuth authorization;
 
-    [SerializeField] private StringListVariable _boardNames;
-    [SerializeField] private StringListVariable _boardIDs;
-
+    [Header("Card Information")]
+    [SerializeField]
+    private StringVariable title;
+    [SerializeField]
+    private StringVariable desc;
+    [SerializeField] 
+    private StringVariable idList;
     
     [Header("Trello Settings")]
     [SerializeField]
     private string _defaultBoard;
     [SerializeField]
     private string _defaultList;
-    
+
+    [Header("Input Signals")]
+    [SerializeField]
+    private EventSignal sendSignal;
+
+    private void OnEnable()
+    {
+        sendSignal.onCall += SendNewCard;
+    }
+
+    private void OnDisable()
+    {
+        sendSignal.onCall -= SendNewCard;
+    }
+
     private void Start() {
-        if (string.IsNullOrEmpty(_key) || string.IsNullOrEmpty(_token)) {
+        if (string.IsNullOrEmpty(authorization.key) || string.IsNullOrEmpty(authorization.token))
+        {
             throw new Exception("The Trello API key or token are missing!");
         }
-
-        SetBoards();
     }
-    public void SendNewCard(TrelloCard card, string list = null, string board = null) {
-
-        if (board == null) {
-            board = _defaultBoard;
-        }
-        if (list == null) {
-            list = _defaultList;
-        }
-
-        StartCoroutine(AsyncSend(card, list, board));
+    public void SendNewCard() {
+        StartCoroutine(AsyncSend());
     }
     
-    public void SetBoards()
+
+
+    IEnumerator AsyncSend()
     {
-        List<string> boards = new List<string>();
-        List<string> boardsID = new List<string>();
-        TrelloAPI api = new TrelloAPI(_key, _token);
-        List<object> boardDict = api.PopulateBoards();
-        foreach (Dictionary<string, object> board in boardDict)
+        TrelloCard card = new TrelloCard();
+        if (string.IsNullOrEmpty(idList.Value))
         {
-            boards.Add((string) board["name"]);
-            boardsID.Add((string) board["id"]);
+            card.idList = _defaultList;
         }
-
-        _boardNames.Value = boards;
-        _boardIDs.Value = boardsID; 
-    }
-
-    IEnumerator AsyncSend(TrelloCard card, string list, string board)
-    {
-        TrelloAPI api = new TrelloAPI(_key, _token);
+        else
+        {
+            card.idList = idList.Value;
+        }
+        card.name = title.Value;
+        card.desc = desc.Value;
+        card.due = DateTime.Today.ToString();
         
-        yield return api.PopulateBoards();
-        
-        yield return null;
+        TrelloAPI api = new TrelloAPI(authorization.key, authorization.token);
+
+        yield return api.UploadCard(card);
+
     }
 }

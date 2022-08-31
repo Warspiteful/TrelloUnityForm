@@ -37,6 +37,15 @@ public class TrelloAPI
         _key = key;
         _token = token;
     }
+    
+    private void CheckWebRequestStatus(string errorMessage, UnityWebRequest uwr) {
+        switch (uwr.result) {
+            case UnityWebRequest.Result.ConnectionError:
+            case UnityWebRequest.Result.ProtocolError:
+            case UnityWebRequest.Result.DataProcessingError:
+                throw new Exception($"{errorMessage}: {uwr.error} ({uwr.downloadHandler.text})");
+        }
+    }
 
     public List<object> PopulateBoards()
     {
@@ -46,7 +55,7 @@ public class TrelloAPI
 
         while (!operation.isDone) {
             Debug.Log("Waiting");
-            //CheckWebRequestStatus("The Trello servers did not respond.", uwr);
+            CheckWebRequestStatus("The Trello servers did not respond.", uwr);
         }
         
         var dict = Json.Deserialize(uwr.downloadHandler.text) as Dictionary<string,object>;
@@ -59,20 +68,28 @@ public class TrelloAPI
         return _boards;
     }
 
-    public List<object> PopulateLists()
+    public List<object> PopulateLists(string id)
     {
-        UnityWebRequest uwr = UnityWebRequest.Get($"{BoardBaseUrl}/{_currentBoardId}lists?key={_key}&token={_token}&boards=all");
+        UnityWebRequest uwr = UnityWebRequest.Get(
+            $"{BoardBaseUrl}/{id}/lists?key={_key}&token={_token}&boards=all");
+        Debug.Log(uwr.url);
         UnityWebRequestAsyncOperation operation = uwr.SendWebRequest();
 
         while (!operation.isDone) {
-            Debug.Log("Waiting");
-            //CheckWebRequestStatus("The Trello servers did not respond.", uwr);
+            
+            CheckWebRequestStatus("The Trello servers did not respond.", uwr);
+        }
+        Debug.Log(uwr.downloadHandler.text);
+        
+        _lists = Json.Deserialize(uwr.downloadHandler.text) as List<object>;
+        
+        foreach (Dictionary<string, object> list in _lists)
+        {
+            Debug.Log((string) list["name"]);
         }
         
-        var dict = Json.Deserialize(uwr.downloadHandler.text) as Dictionary<string,object>;
-      
-        _boards = (List<object>) dict["boards"];
-        Debug.Log(((Dictionary<string, object>) _boards[0]).Keys);
+        
+
         
         return _lists;
     }
@@ -105,6 +122,20 @@ public class TrelloAPI
 
     public TrelloCard UploadCard(TrelloCard card)
     {
+        var post = new WWWForm();
+        post.AddField("name", card.name);
+        post.AddField("desc", card.desc);
+        post.AddField("due", card.due);
+        post.AddField("idList", card.idList);
+        
+        var uwr = UnityWebRequest.Post($"{CardBaseUrl}?key={_key}&token={_token}", post);
+        var operation = uwr.SendWebRequest();
+        
+        while (!operation.isDone) {
+            CheckWebRequestStatus("Could not upload the Trello card.", uwr);
+        }
+
+        Debug.Log($"Trello card sent!\nResponse {uwr.responseCode}");
         return card;
     }
 
