@@ -14,6 +14,10 @@ public class TrelloModel : MonoBehaviour
     [SerializeField]
     private StringVariable activeBoardID;
 
+    [Header("Event Signal Inputs")]
+    [SerializeField]
+    private EventSignal Initialized;
+
     [Header("Event Signal Output")] 
     [SerializeField]
     private EventSignal boardsLoaded;
@@ -29,17 +33,28 @@ public class TrelloModel : MonoBehaviour
     private StringListVariable _listNames;
     [SerializeField]
     private StringListVariable _listIDs;
+    [SerializeField]
+    private StringListVariable _labelNames;
+    [SerializeField]
+    private StringListVariable _labelIDs;
 
-    private void Start()
-    {
-        SetBoards();
-    }
 
     private void OnEnable()
     {
         activeBoardID.ValueUpdated += SetLists;
-    }
+        activeBoardID.ValueUpdated += SetLabels;
 
+        Initialized.onCall += SetBoards;
+    }
+    
+    private void OnDisable()
+    {
+        activeBoardID.ValueUpdated -= SetLists;
+        activeBoardID.ValueUpdated -= SetLabels;
+
+        Initialized.onCall -= SetBoards;
+    }
+    
     public void SetBoards()
     {
         List<string> boards = new List<string>();
@@ -57,7 +72,24 @@ public class TrelloModel : MonoBehaviour
         boardsLoaded.onCall?.Invoke();
 
     }
-    
+
+    public void SetLabels()
+    {
+        List<string> labelNames = new List<string>();
+        List<string> labelIDs = new List<string>();
+        TrelloAPI api = new TrelloAPI(authorization.key, authorization.token);
+        List<object> labelDict = api.PopulateLabels(activeBoardID.Value);
+        foreach (Dictionary<string, object> board in labelDict)
+        {
+            labelNames.Add((string) board["name"]);
+            labelIDs.Add((string) board["id"]);
+        }
+
+        _labelNames.Value = labelNames;
+        _labelIDs.Value = labelIDs;
+
+    }
+
     public void SetLists()
     {
         List<string> lists = new List<string>();

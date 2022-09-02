@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using MiniJSON;
 using UnityEngine;
@@ -31,6 +32,9 @@ public class TrelloAPI
     }
     
     private void CheckWebRequestStatus(string errorMessage, UnityWebRequest uwr) {
+        
+        //LMAO, My code only works with this in here right now
+        Debug.Log(uwr.result);
         switch (uwr.result) {
             case UnityWebRequest.Result.ConnectionError:
             case UnityWebRequest.Result.ProtocolError:
@@ -39,6 +43,20 @@ public class TrelloAPI
         }
     }
 
+    public void Authenticate()
+    {
+      
+        UnityWebRequest uwr = HandleRequest
+            (
+                UnityWebRequest.Get($"{MemberBaseUrl}?key={_key}&token={_token}")
+            );
+
+        while (!uwr.isDone)
+        {
+         
+        }
+        
+    }
     public List<object> PopulateBoards()
     {
         UnityWebRequest uwr = HandleRequest
@@ -58,19 +76,33 @@ public class TrelloAPI
             UnityWebRequest.Get(
             $"{BoardBaseUrl}/{id}/lists?key={_key}&token={_token}&boards=all")
         );
+        
         List<object> listData = Json.Deserialize(uwr.downloadHandler.text) as List<object>;
         uwr.Dispose();
         return listData;
     }
     
-    public TrelloCard UploadCard(TrelloCard card)
+    public List<object> PopulateLabels(string id)
+    {
+        UnityWebRequest uwr = HandleRequest
+        (
+            UnityWebRequest.Get(
+                $"{BoardBaseUrl}/{id}/labels?key={_key}&token={_token}&boards=all")
+        );
+        
+        List<object> labelData = Json.Deserialize(uwr.downloadHandler.text) as List<object>;
+        uwr.Dispose();
+        return labelData;
+    }
+    
+    public void UploadCard(TrelloCard card)
     {
         var post = new WWWForm();
         post.AddField("name", card.name);
         post.AddField("desc", card.desc);
         post.AddField("due", card.due);
         post.AddField("idList", card.idList);
-        //post.AddField("idLabels", String.Join(",",card.labelIDList));
+        post.AddField("idLabels", String.Join(",",card.labelIDList));
         
         UnityWebRequest uwr = HandleRequest
         (
@@ -78,16 +110,17 @@ public class TrelloAPI
         );
         
         uwr.Dispose();
-        return card;
     }
     
     private UnityWebRequest HandleRequest(UnityWebRequest uwr)
     {
         UnityWebRequestAsyncOperation operation = uwr.SendWebRequest();
-        while (!operation.isDone) {
+
+        while (!operation.isDone)
+        {
             CheckWebRequestStatus("Could not upload the Trello card.", uwr);
         }
-
+        
         return uwr;
     }
 }

@@ -18,20 +18,28 @@ public class FormController : MonoBehaviour
     [SerializeField] private TMP_InputField LastNameInput;
 
     [SerializeField] private TMP_InputField EmailInput;
-
+    
     [Header("Data Inputs")]
     [SerializeField] private StringListVariable boards;
     [SerializeField] private StringListVariable boardIds;
     [SerializeField] private StringListVariable lists;
     [SerializeField] private StringListVariable listIds;
 
+    [SerializeField] 
+    private StringListVariable errorList;
+    
+    
     [Header("Data Outputs")]
     [SerializeField] private StringVariable selectedBoard;
     [SerializeField] private StringVariable selectedBoardId;
     [SerializeField] private StringVariable selectedList;
     [SerializeField] private StringVariable selectedListId;
+
     [SerializeField] private StringVariable desc;
     [SerializeField] private StringVariable title;
+    [SerializeField] private StringVariable firstName;
+    [SerializeField] private StringVariable lastName;
+    [SerializeField] private StringVariable email;
     [SerializeField] private StringVariable dueTime;
     [SerializeField] private SeverityEnumVariable severity;
     
@@ -40,6 +48,13 @@ public class FormController : MonoBehaviour
     private EventSignal onBoardLoad;
     [SerializeField]
     private EventSignal onListLoad;
+    [SerializeField]    
+    private EventSignal showError;
+    [SerializeField] 
+    private EventSignal hideError;
+    [SerializeField] 
+    private EventSignal displaySignal;
+
 
     [Header("Output Event Signal")] 
     [SerializeField]
@@ -47,6 +62,10 @@ public class FormController : MonoBehaviour
 
     [SerializeField]
     private EventSignal resetSignal;
+
+    [Header("Controlled Game Objects")]
+    [SerializeField]
+    private GameObject Canvas;
     
     
     
@@ -56,6 +75,8 @@ public class FormController : MonoBehaviour
         onBoardLoad.onCall += AddBoardDropdownOptions;
         onListLoad.onCall += AddListDropdownOptions;
         resetSignal.onCall += ResetFields;
+        displaySignal.onCall += ToggleScreen;
+
     }
 
     private void OnDisable()
@@ -63,6 +84,14 @@ public class FormController : MonoBehaviour
         onBoardLoad.onCall -= AddBoardDropdownOptions;
         onListLoad.onCall -= AddListDropdownOptions;
         resetSignal.onCall -= ResetFields;
+        displaySignal.onCall -= ToggleScreen;
+
+    }
+
+    private void ToggleScreen()
+    {
+        Canvas.SetActive(!Canvas.activeSelf);
+
     }
 
     private void AddBoardDropdownOptions() {
@@ -86,37 +115,30 @@ public class FormController : MonoBehaviour
         SetActiveList(0);
     }
     
+ 
+    
     private void ToggleListDropdown(bool isRevealed)
     {
         ListDropdown.gameObject.SetActive(isRevealed);
     }
 
-    public void SetDescription(string description)
+    public void SetDescription(string text)
     {
-        desc.Value = "#" + "Demo " + Application.version + "\n" +
-                     "___\n" +
-
-                     "###System Information\n" +
-                     "- " + SystemInfo.operatingSystem + "\n" +
-                     "- " + SystemInfo.processorType + "\n" +
-                     "- " + SystemInfo.systemMemorySize + " MB\n" +
-                     "- " + SystemInfo.graphicsDeviceName + " (" + SystemInfo.graphicsDeviceType +
-                     ")\n" +
-                     "\n" +
-                     "___\n" +
-                     "###User Description\n" +
-                     "```\n" +
-                     description + "\n" +
-                     "```\n" +
-                     "___\n" +
-                     "###Other Information\n" +
-                     "Playtime: " +
-                     String.Format("{0:0}:{1:00}", Mathf.Floor(Time.time / 60), Time.time % 60) +
-                     "h\n" + 
-                     "___\n" +
-                     "###User Contact\n" +
-                     "- Name: " + FirstNameInput.text + " " + LastNameInput.text + "\n" +
-                     "- Email: " + EmailInput.text + "\n";
+        desc.Value = text;
+    }
+    
+    public void SetFirstName(string text)
+    {
+        firstName.Value = text;
+    }
+    public void SetLastName(string text)
+    {
+        lastName.Value = text;
+    }
+    
+    public void SetEmail(string text)
+    {
+        email.Value = text;
     }
 
     public void SetActiveBoard(Int32 selectedDropdown)
@@ -140,40 +162,80 @@ public class FormController : MonoBehaviour
         selectedList.Value = lists.Value[selectedDropdown];
         selectedListId.Value = listIds.Value[selectedDropdown];
     }
+    
 
     public void SendSignal()
     {
-        if (string.IsNullOrEmpty(selectedListId.Value))
+        dueTime.Value = DateTime.Today.ToString();
+
+        hideError.onCall?.Invoke();
+
+        if(ValidateFields()){
+            sendSignal.onCall?.Invoke();
+        }
+        else
         {
-            Debug.Log("Must select Valid List ID");
+            showError.onCall?.Invoke();
+        }
+    }
+
+    private bool ValidateFields()
+    {
+        List<string> errorList = new List<string>();
+
+        if (string.IsNullOrEmpty(firstName.Value))
+        {
+            errorList.Add("Must enter First Name.");
+        }
+        if (string.IsNullOrEmpty(lastName.Value))
+        {
+            errorList.Add("Must enter Last Name.");
+        }
+        if (string.IsNullOrEmpty(email.Value))
+        {
+            errorList.Add("Must enter Email.");
+        }
+        if (string.IsNullOrEmpty(title.Value))
+        {
+            errorList.Add("Must enter Title.");
         }
 
         if (string.IsNullOrEmpty(desc.Value))
         {
-            Debug.Log("Must Add Description");
+            errorList.Add("Must Enter Description");
+        }
+        if (string.IsNullOrEmpty(selectedBoard.Value) || string.IsNullOrEmpty(selectedBoardId.Value))
+        {
+            errorList.Add("Must enter Title.");
+        }
+        if (string.IsNullOrEmpty(selectedList.Value) || string.IsNullOrEmpty(selectedListId.Value))
+        {
+            errorList.Add("Must enter Title.");
         }
 
-        if (string.IsNullOrEmpty(title.Value))
-        {
-            Debug.Log("Must place title");
-        }
-        
-        dueTime.Value = DateTime.Today.ToString();
-        
-        sendSignal.onCall?.Invoke();
+        this.errorList.Value = errorList;
+            
+        return errorList.Count == 0;
+
     }
 
     private void ResetFields()
     {
         SetActiveBoard(0);
         BoardDropdown.value = 0;
-
         TitleInput.text = "";
         DescInput.text = "";
+        FirstNameInput.text = "";
+        LastNameInput.text = "";
+        EmailInput.text = "";
     }
+
+
 
     public void SetSeverity(SeverityValue severityVal)
     {
+     
         severity.Value = severityVal.severity;
     }
+    
 }

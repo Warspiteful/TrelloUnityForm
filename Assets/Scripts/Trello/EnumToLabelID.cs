@@ -7,7 +7,7 @@ using UnityEngine;
 public class EnumToLabel
 {
     public SeverityEnum _severity;
-    public string label;
+    public int label;
 }
 
 public class EnumToLabelID : MonoBehaviour
@@ -18,6 +18,10 @@ public class EnumToLabelID : MonoBehaviour
 
     [SerializeField] private List<EnumToLabel> labelConversion;
     
+    [SerializeField] private StringListVariable labels;
+    [SerializeField] private StringListVariable labelIds;
+    [SerializeField] private StringVariable selectedLabel;
+    [SerializeField] private StringVariable selectedLabelId;
     private void OnEnable()
     {
         severity.ValueUpdated += ConvertEnumToLabel;
@@ -34,7 +38,8 @@ public class EnumToLabelID : MonoBehaviour
         {
             if (severity.Value == converter._severity)
             {
-                labelID.Value = converter.label;
+                selectedLabel.Value = labels.Value[converter.label];
+                selectedLabelId.Value = labelIds.Value[converter.label];
                 return;
             }
         }

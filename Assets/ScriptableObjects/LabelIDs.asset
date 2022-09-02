@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d4ba7711142cb84cb38c5250c8b372c, type: 3}
-  m_Name: Authorization
+  m_Script: {fileID: 11500000, guid: 857b8ac879fbf2344b2669bd48b6acb4, type: 3}
+  m_Name: LabelIDs
   m_EditorClassIdentifier: 
-  token: 
-  key: 
+  value: []
